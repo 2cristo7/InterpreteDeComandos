@@ -1,16 +1,24 @@
 %{
-#include "parser.h"  // generado por Bison
+#include "parser.h"
 #include <string.h>
 %}
 
 %%
-echo                return TK_ECHO;
-[ \t]+              ; // Ignorar espacios
-\n                  return EOL;
-[^ \t\n]+           { yylval.str = strdup(yytext); return TEXT; }
-.                   return yytext[0];
+
+[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?  { yylval.num = atof(yytext); return NUMBER; }
+
+"+"     return PLUS;
+"-"     return MINUS;
+"*"     return TIMES;
+"/"     return DIVIDE;
+
+"QUIT()"    return QUIT_CALL;
+
+[ \t]+  ; // Ignorar espacios
+\n      return EOL;
+
+.       { printf("Carácter no válido: %s\n", yytext); }
+
 %%
 
-int yywrap() {
-    return 1;
-}
+int yywrap() { return 1; }

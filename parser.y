@@ -1,42 +1,52 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 void yyerror(const char *s);
 int yylex(void);
+
+int quit_flag = 0;
+
+void set_quit_flag(int value) { quit_flag = value; }
+int get_quit_flag(void) { return quit_flag; }
+
 %}
 
 %union {
-    char *str;
+    double num;
 }
 
-%token TK_ECHO
-%token <str> TEXT
-%token EOL
-%type <str> text_list
+%token <num> NUMBER
+%token PLUS MINUS TIMES DIVIDE EOL QUIT_CALL
+%type <num> expr
 
 %%
 
 input:
     /* vacío */
-    | input line
-    ;
+  | input line
+  ;
 
 line:
-    TK_ECHO text_list EOL    { printf("%s\n", $2); free($2); }
-    | EOL                 { /* línea vacía */ }
-    | error EOL           { yyerror("Comando no reconocido"); yyerrok; }
-    ;
+    expr EOL            { printf("%.6f\n", $1); }
+  | QUIT_CALL EOL       { set_quit_flag(1); }
+  | EOL                 { /* línea vacía */ }
+  ;
 
-text_list:
-    TEXT                  { $$ = strdup($1); }
-    | text_list TEXT      {
-                            $$ = malloc(strlen($1) + strlen($2) + 2);
-                            sprintf($$, "%s %s", $1, $2);
-                            free($1); free($2);
+expr:
+    expr PLUS expr      { $$ = $1 + $3; }
+  | expr MINUS expr     { $$ = $1 - $3; }
+  | expr TIMES expr     { $$ = $1 * $3; }
+  | expr DIVIDE expr    {
+                          if ($3 == 0) {
+                              yyerror("División por cero");
+                              $$ = 0;
+                          } else {
+                              $$ = $1 / $3;
                           }
-    ;
+                        }
+  | NUMBER              { $$ = $1; }
+  ;
 
 %%
 
