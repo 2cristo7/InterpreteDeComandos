@@ -1,4 +1,4 @@
-all: echo
+all: interpreter
 
 parser.c parser.h: parser.y
 	bison -d -o parser.c parser.y
@@ -6,8 +6,8 @@ parser.c parser.h: parser.y
 lexer.c: lexer.l parser.h
 	flex -o lexer.c lexer.l
 
-echo: lexer.o parser.o main.o
-	$(CC) -o echo lexer.o parser.o main.o
+interpreter: lexer.o parser.o main.o
+	$(CC) -o interpreter lexer.o parser.o main.o
 
 lexer.o: lexer.c
 	$(CC) -c lexer.c
@@ -19,5 +19,4 @@ main.o: main.c
 	$(CC) -c main.c
 
 clean:
-	rm -f parser.c parser.h lexer.c *.o echo
-
+	rm -f parser.c parser.h lexer.c *.o interpreter

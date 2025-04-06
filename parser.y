@@ -16,8 +16,13 @@ int get_quit_flag(void) { return quit_flag; }
     double num;
 }
 
+%token EOL
+
 %token <num> NUMBER
-%token PLUS MINUS TIMES DIVIDE EOL QUIT_CALL
+%token PLUS MINUS TIMES DIVIDE
+
+%token QUIT_CALL
+
 %type <num> expr
 
 %%
@@ -28,10 +33,12 @@ input:
   ;
 
 line:
-    expr EOL            { printf("%.6f\n", $1); }
+    expr EOL            { printf("%.2f\n", $1); }
   | QUIT_CALL EOL       { set_quit_flag(1); }
   | EOL                 { /* línea vacía */ }
+  | error EOL           { yyerror("Entrada no válida"); yyerrok; }
   ;
+
 
 expr:
     expr PLUS expr      { $$ = $1 + $3; }
@@ -45,6 +52,7 @@ expr:
                               $$ = $1 / $3;
                           }
                         }
+  | '(' expr ')'        { $$ = $2; }
   | NUMBER              { $$ = $1; }
   ;
 

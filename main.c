@@ -6,8 +6,7 @@ extern int yyparse(void);
 extern void set_quit_flag(int value);
 extern int get_quit_flag(void);
 extern void yy_scan_string(const char *str);
-extern void yy_delete_buffer(void *b);
-extern void *yy_scan_buffer(char *, size_t);
+extern void yylex_destroy(void); // Limpia buffers de Flex
 
 #define MAX_LINE 1024
 
@@ -22,12 +21,15 @@ int main() {
         fflush(stdout);
 
         if (!fgets(line, MAX_LINE, stdin)) {
-            break; // EOF o error
+            break;
         }
 
-        // Enviamos esta línea al analizador
-        yy_scan_string(line);
+        // Saltar líneas vacías
+        if (strlen(line) <= 1) continue;
+
+        yy_scan_string(line);  // Análisis de esta línea
         yyparse();
+        yylex_destroy();       // Limpia memoria de Flex para próximas líneas
     }
 
     printf("¡Hasta pronto!\n");
