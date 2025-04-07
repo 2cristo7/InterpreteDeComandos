@@ -36,7 +36,10 @@ int get_quit_flag(void) { return quit_flag; }
 %left TIMES DIVIDE
 %right UMINUS
 
-%type <num> expr assignment
+%type <num> expr
+%type <num> assignment
+%type <num> func_call
+
 
 %%
 
@@ -88,7 +91,42 @@ expr:
                             }
                             free($1);
                          }
+  | func_call              { $$ = $1; }
 ;
+
+func_call:
+    ID '(' expr ')' {
+        double result;
+
+        if (strcmp($1, "sin") == 0) result = sin($3);
+        else if (strcmp($1, "cos") == 0) result = cos($3);
+        else if (strcmp($1, "tan") == 0) result = tan($3);
+        else if (strcmp($1, "log") == 0) result = log($3);
+        else if (strcmp($1, "exp") == 0) result = exp($3);
+        else {
+            yyerror("Función desconocida o número de argumentos incorrecto.");
+            result = 0;
+        }
+
+        free($1);
+        $$ = result;
+    }
+
+  | ID '(' expr ',' expr ')' {
+        double result;
+
+        if (strcmp($1, "min") == 0) result = fmin($3, $5);
+        else if (strcmp($1, "max") == 0) result = fmax($3, $5);
+        else {
+            yyerror("Función desconocida o número de argumentos incorrecto.");
+            result = 0;
+        }
+
+        free($1);
+        $$ = result;
+    }
+;
+
 
 
 %%
