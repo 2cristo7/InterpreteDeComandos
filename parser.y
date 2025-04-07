@@ -26,6 +26,7 @@ int get_quit_flag(void) { return quit_flag; }
 %token QUIT_CALL
 %token WORKSPACE_CALL
 %token CLEAR_CALL
+%token HELP_CALL
 
 %token <num> NUMBER
 %token <str> ID
@@ -54,6 +55,22 @@ line:
   | QUIT_CALL EOL        { set_quit_flag(1); }
   | WORKSPACE_CALL EOL   { printWorkspace(); }
   | CLEAR_CALL EOL       { clearVariables(); printf("Variables eliminadas.\n");}
+  | HELP_CALL EOL {
+      printf("------ AYUDA ------\n");
+      printf("Este es un intérprete de expresiones matemáticas.\n");
+      printf("Comandos disponibles:\n");
+      printf(" - QUIT()       : Salir del programa\n");
+      printf(" - HELP()       : Mostrar esta ayuda\n");
+      printf(" - CLEAR()      : Borrar todas las variables\n");
+      printf(" - WORKSPACE()  : Ver variables definidas\n");
+      printf(" - LOAD(\"archivo.txt\") : Ejecutar comandos desde archivo\n");
+      printf("También puedes usar:\n");
+      printf(" - Variables: a = 3, a + 1\n");
+      printf(" - Constantes: PI, E\n");
+      printf(" - Funciones: sin(), cos(), log(), min() y max()\n");
+      printf("-------------------\n");
+}
+
   | EOL
   | error EOL            { yyerror("Entrada no válida"); yyerrok; }
   ;
@@ -81,6 +98,7 @@ expr:
   | MINUS expr %prec UMINUS { $$ = -$2; }
   | '(' expr ')'         { $$ = $2; }
   | NUMBER               { $$ = $1; }
+  | func_call              { $$ = $1; }
   | ID                   {
                             double val;
                             if (getVariable($1, &val)) {
@@ -91,7 +109,6 @@ expr:
                             }
                             free($1);
                          }
-  | func_call              { $$ = $1; }
 ;
 
 func_call:
