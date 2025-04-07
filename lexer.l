@@ -18,6 +18,7 @@ HEXA        0[xX][0-9a-fA-F]+
 "WORKSPACE()"   return WORKSPACE_CALL;
 "CLEAR()"       return CLEAR_CALL;
 "HELP()"        return HELP_CALL;
+"CLEAN()"       return CLEAN_CALL;
 
 {CIENTIFIC}     { yylval.num = atof(yytext); return NUMBER; }
 {FLOAT}         { yylval.num = atof(yytext); return NUMBER; }

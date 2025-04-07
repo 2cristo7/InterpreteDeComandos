@@ -27,6 +27,8 @@ int get_quit_flag(void) { return quit_flag; }
 %token WORKSPACE_CALL
 %token CLEAR_CALL
 %token HELP_CALL
+%token CLEAN_CALL
+
 
 %token <num> NUMBER
 %token <str> ID
@@ -62,6 +64,7 @@ line:
       printf(" - QUIT()       : Salir del programa\n");
       printf(" - HELP()       : Mostrar esta ayuda\n");
       printf(" - CLEAR()      : Borrar todas las variables\n");
+      printf(" - CLEAN()      : Limpiar la ventana de comandos\n");
       printf(" - WORKSPACE()  : Ver variables definidas\n");
       printf(" - LOAD(\"archivo.txt\") : Ejecutar comandos desde archivo\n");
       printf("También puedes usar:\n");
@@ -69,8 +72,10 @@ line:
       printf(" - Constantes: PI, E\n");
       printf(" - Funciones: sin(), cos(), log(), min() y max()\n");
       printf("-------------------\n");
-}
-
+  }
+  | CLEAN_CALL EOL {
+      system("clear");  // En Linux/macOS
+  }
   | EOL
   | error EOL            { yyerror("Entrada no válida"); yyerrok; }
   ;
