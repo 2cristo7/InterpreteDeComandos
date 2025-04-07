@@ -30,6 +30,17 @@ ECHO[ \t]+OFF    return ECHO_OFF;
 
 {ID}            { yylval.str = strdup(yytext); return ID; }
 
+LOAD\(\"[^"]+\"\)     {
+    yylval.str = strdup(yytext);
+    return LOAD_CALL;
+}
+
+echo[ \t]+\"[^\"]*\"    {
+    yylval.str = strdup(yytext + 5);  // salta "echo "
+    return ECHO_PRINT;
+}
+
+
 
 "+"             return PLUS;
 "-"             return MINUS;

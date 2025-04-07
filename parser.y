@@ -6,6 +6,8 @@
 
 #include "symbolTable.h"
 
+extern FILE *yyin;
+
 void yyerror(const char *s);
 int yylex(void);
 
@@ -35,6 +37,10 @@ int get_quit_flag(void) { return quit_flag; }
 
 %token ECHO_ON ECHO_OFF
 %token SEMICOLON
+
+%token <str> LOAD_CALL
+
+%token <str> ECHO_PRINT
 
 %token <num> NUMBER
 %token <str> ID
@@ -87,6 +93,33 @@ line:
   }
   | ECHO_ON EOL  { set_echo(1); printf("ECHO activado.\n"); }
   | ECHO_OFF EOL { set_echo(0); printf("ECHO desactivado.\n"); }
+  | LOAD_CALL EOL {
+      char filename[1024];
+      if (sscanf($1, "LOAD(\"%1023[^\"]\")", filename) != 1) {
+          fprintf(stderr, "Error de formato en LOAD\n");
+      } else {
+          FILE *f = fopen(filename, "r");
+          if (!f) {
+              fprintf(stderr, "Error al abrir archivo: %s\n", filename);
+          } else {
+              printf("ARCHIVO ABIERTO\n");
+              yyin = f;
+              yyrestart(yyin);
+          }
+      }
+      free($1);
+  }
+  | ECHO_PRINT EOL {
+        // Imprimir el mensaje sin las comillas
+        size_t len = strlen($1);
+        if (len >= 2 && $1[0] == '"' && $1[len - 1] == '"') {
+            $1[len - 1] = '\0'; // quitar última comilla
+            printf("%s\n", $1 + 1); // quitar primera comilla
+        } else {
+            printf("%s\n", $1); // seguridad si falta comilla
+        }
+        free($1);
+  }
   | EOL
   | error EOL            { yyerror("Entrada no válida"); yyerrok; }
   ;
