@@ -2,11 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 #include "symbolTable.h"
 #include "hashTable.h"
 
 void initializeSymbolTable() {
     initializeHashTable(100);  // Ajusta el tamaño de la tabla hash según sea necesario
+
+    // initilize constants
+    insert("PI", T_CONSTANT, M_PI);
+    insert("E", T_CONSTANT, M_E);
 }
 
 void printWorkspace() {
@@ -26,7 +31,10 @@ void setVariable(const char* name, double value) {
 
     if (slot.id == -10) {
         insert(name, T_ID, value);
-    } else {
+    }
+    else if (slot.id == T_CONSTANT) {
+        printf("Error: '%s' es una constante y no se puede modificar.\n", name);
+    }else {
         update(name, value);
     }
 
