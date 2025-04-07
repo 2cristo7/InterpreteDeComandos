@@ -19,6 +19,8 @@ int get_echo() { return echo_enabled; }
 
 void set_quit_flag(int value) { quit_flag = value; }
 int get_quit_flag(void) { return quit_flag; }
+
+void yyrestart(FILE *input_file);
 %}
 
 %union {

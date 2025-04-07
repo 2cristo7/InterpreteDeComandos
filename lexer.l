@@ -2,7 +2,11 @@
 #include "parser.h"
 #include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 %}
+%option noinput nounput
+
 
 DIGITO      [0-9]
 LETRA       [a-zA-Z_]
@@ -14,7 +18,7 @@ HEXA        0[xX][0-9a-fA-F]+
 
 %%
 
-"Q"             return QUIT_CALL;
+"QUIT()"        return QUIT_CALL;
 "WORKSPACE()"   return WORKSPACE_CALL;
 "CLEAR()"       return CLEAR_CALL;
 "HELP()"        return HELP_CALL;

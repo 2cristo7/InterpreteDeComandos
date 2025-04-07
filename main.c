@@ -22,21 +22,11 @@ int main() {
     printf("Bienvenido al intérprete matemático interactivo.\n");
     printf("Escriba HELP() para ayuda, QUIT() para salir.\n");
 
-    /*while (!get_quit_flag()) {
-        printf("> ");
-        fflush(stdout);
-
-        if (!fgets(line, MAX_LINE, stdin)) {
-            break;
-        }
-
-        // Saltar líneas vacías
-        if (strlen(line) <= 1) continue;
-
-        yy_scan_string(line);  // Análisis de esta línea
-        yyparse();
-        yylex_destroy();       // Limpia memoria de Flex para próximas líneas
-    }*/
+    // automatic HELP() execution
+    strcpy(line, "HELP()\n");
+    yy_scan_string(line);
+    yyparse();
+    yylex_destroy();
 
     while (!get_quit_flag()) {
         if (yyin == NULL) yyin = stdin;

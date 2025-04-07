@@ -29,5 +29,13 @@ symbolTable.o: symbolTable.c symbolTable.h
 hashTable.o: hashTable.c hashTable.h definitions.h
 	$(CC) $(CFLAGS) -c hashTable.c
 
+# Ejecución normal
+run: $(TARGET)
+	./$(TARGET)
+
+# Ejecución con Valgrind
+valgrind: $(TARGET)
+	valgrind --leak-check=full --track-origins=yes ./$(TARGET)
+
 clean:
 	rm -f *.o lexer.c parser.c parser.h $(TARGET)
