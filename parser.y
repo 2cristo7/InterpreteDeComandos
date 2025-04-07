@@ -45,10 +45,11 @@ int get_quit_flag(void) { return quit_flag; }
 %token <num> NUMBER
 %token <str> ID
 
-%token PLUS MINUS TIMES DIVIDE
+%token PLUS MINUS TIMES DIVIDE POWER
 
 %left PLUS MINUS
 %left TIMES DIVIDE
+%right POWER
 %right UMINUS
 
 %type <num> expr
@@ -67,10 +68,10 @@ input:
 line:
     assignment line_end       { if (get_echo() && $2) printf("%.2f\n", $1); }
   | expr line_end             { if (get_echo() && $2) printf("%.2f\n", $1); }
-  | QUIT_CALL EOL        { set_quit_flag(1); }
-  | WORKSPACE_CALL EOL   { printWorkspace(); }
-  | CLEAR_CALL EOL       { clearVariables(); printf("Variables eliminadas.\n");}
-  | HELP_CALL EOL {
+  | QUIT_CALL line_end        { set_quit_flag(1); }
+  | WORKSPACE_CALL line_end   { printWorkspace(); }
+  | CLEAR_CALL line_end       { clearVariables(); printf("Variables eliminadas.\n");}
+  | HELP_CALL line_end {
       printf("------ AYUDA ------\n");
       printf("Este es un intérprete de expresiones matemáticas.\n");
       printf("Comandos disponibles:\n");
@@ -85,15 +86,16 @@ line:
       printf("También puedes usar:\n");
       printf(" - Variables: a = 3, a + 1\n");
       printf(" - Constantes: PI, E\n");
+      printf(" - Operaciones básicas: +, -, *, /, ^\n");
       printf(" - Funciones: sin(), cos(), log(), min() y max()\n");
       printf("-------------------\n");
   }
-  | CLEAN_CALL EOL {
+  | CLEAN_CALL line_end {
       system("clear");  // En Linux/macOS
   }
-  | ECHO_ON EOL  { set_echo(1); printf("ECHO activado.\n"); }
-  | ECHO_OFF EOL { set_echo(0); printf("ECHO desactivado.\n"); }
-  | LOAD_CALL EOL {
+  | ECHO_ON line_end  { set_echo(1); printf("ECHO activado.\n"); }
+  | ECHO_OFF line_end { set_echo(0); printf("ECHO desactivado.\n"); }
+  | LOAD_CALL line_end {
       char filename[1024];
       if (sscanf($1, "LOAD(\"%1023[^\"]\")", filename) != 1) {
           fprintf(stderr, "Error de formato en LOAD\n");
@@ -109,7 +111,7 @@ line:
       }
       free($1);
   }
-  | ECHO_PRINT EOL {
+  | ECHO_PRINT line_end {
         // Imprimir el mensaje sin las comillas
         size_t len = strlen($1);
         if (len >= 2 && $1[0] == '"' && $1[len - 1] == '"') {
@@ -144,6 +146,7 @@ expr:
                                 $$ = $1 / $3;
                             }
                           }
+  | expr POWER expr { $$ = pow($1, $3); }
   | MINUS expr %prec UMINUS { $$ = -$2; }
   | '(' expr ')'         { $$ = $2; }
   | NUMBER               { $$ = $1; }

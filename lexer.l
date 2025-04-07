@@ -46,6 +46,7 @@ echo[ \t]+\"[^\"]*\"    {
 "-"             return MINUS;
 "*"             return TIMES;
 "/"             return DIVIDE;
+"^"             return POWER;
 "("             return '(';
 ")"             return ')';
 
