@@ -42,6 +42,9 @@ ECHO[ \t]+OFF    return ECHO_OFF;
 
 "="             return '=';
 
+";"             return SEMICOLON;
+
+
 [ \t]+          ;
 \n              return EOL;
 

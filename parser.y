@@ -34,6 +34,7 @@ int get_quit_flag(void) { return quit_flag; }
 %token CLEAN_CALL
 
 %token ECHO_ON ECHO_OFF
+%token SEMICOLON
 
 %token <num> NUMBER
 %token <str> ID
@@ -47,6 +48,7 @@ int get_quit_flag(void) { return quit_flag; }
 %type <num> expr
 %type <num> assignment
 %type <num> func_call
+%type <num> line_end
 
 
 %%
@@ -57,8 +59,8 @@ input:
   ;
 
 line:
-    assignment EOL       { if (get_echo()) printf("%.2f\n", $1); }
-  | expr EOL             { if (get_echo()) printf("%.2f\n", $1); }
+    assignment line_end       { if (get_echo() && $2) printf("%.2f\n", $1); }
+  | expr line_end             { if (get_echo() && $2) printf("%.2f\n", $1); }
   | QUIT_CALL EOL        { set_quit_flag(1); }
   | WORKSPACE_CALL EOL   { printWorkspace(); }
   | CLEAR_CALL EOL       { clearVariables(); printf("Variables eliminadas.\n");}
@@ -71,6 +73,8 @@ line:
       printf(" - CLEAR()      : Borrar todas las variables\n");
       printf(" - CLEAN()      : Limpiar la ventana de comandos\n");
       printf(" - WORKSPACE()  : Ver variables definidas\n");
+      printf(" - ECHO ON/OFF()  : Activa o desactiva el ECHO\n");
+      printf("\tPara descativarlo solo para 1 comando, terminarlo con un ';'\n");
       printf(" - LOAD(\"archivo.txt\") : Ejecutar comandos desde archivo\n");
       printf("También puedes usar:\n");
       printf(" - Variables: a = 3, a + 1\n");
@@ -154,6 +158,10 @@ func_call:
         free($1);
         $$ = result;
     }
+;
+line_end:
+    EOL             { $$ = 1; }   // mostrar resultado
+  | SEMICOLON       { $$ = 0; }   // no mostrar resultado
 ;
 
 
