@@ -14,7 +14,9 @@ HEXA        0[xX][0-9a-fA-F]+
 
 %%
 
-"Q"        return QUIT_CALL;
+"Q"             return QUIT_CALL;
+"WORKSPACE()"   return WORKSPACE_CALL;
+"CLEAR()"       return CLEAR_CALL;
 
 {CIENTIFIC}     { yylval.num = atof(yytext); return NUMBER; }
 {FLOAT}         { yylval.num = atof(yytext); return NUMBER; }
