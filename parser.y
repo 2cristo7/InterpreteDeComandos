@@ -10,6 +10,10 @@ void yyerror(const char *s);
 int yylex(void);
 
 int quit_flag = 0;
+int echo_enabled = 1;
+
+void set_echo(int value) { echo_enabled = value; }
+int get_echo() { return echo_enabled; }
 
 void set_quit_flag(int value) { quit_flag = value; }
 int get_quit_flag(void) { return quit_flag; }
@@ -29,6 +33,7 @@ int get_quit_flag(void) { return quit_flag; }
 %token HELP_CALL
 %token CLEAN_CALL
 
+%token ECHO_ON ECHO_OFF
 
 %token <num> NUMBER
 %token <str> ID
@@ -52,8 +57,8 @@ input:
   ;
 
 line:
-    assignment EOL       { printf("%.2f\n", $1); }
-  | expr EOL             { printf("%.2f\n", $1); }
+    assignment EOL       { if (get_echo()) printf("%.2f\n", $1); }
+  | expr EOL             { if (get_echo()) printf("%.2f\n", $1); }
   | QUIT_CALL EOL        { set_quit_flag(1); }
   | WORKSPACE_CALL EOL   { printWorkspace(); }
   | CLEAR_CALL EOL       { clearVariables(); printf("Variables eliminadas.\n");}
@@ -76,6 +81,8 @@ line:
   | CLEAN_CALL EOL {
       system("clear");  // En Linux/macOS
   }
+  | ECHO_ON EOL  { set_echo(1); printf("ECHO activado.\n"); }
+  | ECHO_OFF EOL { set_echo(0); printf("ECHO desactivado.\n"); }
   | EOL
   | error EOL            { yyerror("Entrada no válida"); yyerrok; }
   ;

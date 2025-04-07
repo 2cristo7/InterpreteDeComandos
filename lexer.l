@@ -20,6 +20,9 @@ HEXA        0[xX][0-9a-fA-F]+
 "HELP()"        return HELP_CALL;
 "CLEAN()"       return CLEAN_CALL;
 
+ECHO[ \t]+ON     return ECHO_ON;
+ECHO[ \t]+OFF    return ECHO_OFF;
+
 {CIENTIFIC}     { yylval.num = atof(yytext); return NUMBER; }
 {FLOAT}         { yylval.num = atof(yytext); return NUMBER; }
 {INT}           { yylval.num = atof(yytext); return NUMBER; }
