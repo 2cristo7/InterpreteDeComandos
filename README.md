@@ -39,30 +39,29 @@ make clean
 
 ---
 
-## 🚀 Ejecución
+## 🚀 Ejecución del intérprete
 
-Lanza el intérprete con:
+### Ejecución normal
+
+```bash
+make run
+```
+
+### Ejecución directa sin Make
 
 ```bash
 ./interpreter
 ```
 
-Verás el prompt interactivo:
+### Ejecución con Valgrind
 
-```
-> 
-```
-
-Desde ahí puedes escribir expresiones y comandos. Por ejemplo:
+Para depurar memoria con Valgrind:
 
 ```bash
-> a = 3
-3.000000
-> b = 5
-5.000000
-> a + b
-8.000000
+make valgrind
 ```
+
+Esto mostrará información de posibles fugas de memoria.
 
 ---
 
