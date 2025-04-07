@@ -1,22 +1,33 @@
-all: interpreter
+CC = gcc
+CFLAGS = -Wall -g
+OBJS = lexer.o parser.o main.o symbolTable.o hashTable.o
+TARGET = interpreter
 
-parser.c parser.h: parser.y
-	bison -d -o parser.c parser.y
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) -lm
 
 lexer.c: lexer.l parser.h
 	flex -o lexer.c lexer.l
 
-interpreter: lexer.o parser.o main.o
-	$(CC) -o interpreter lexer.o parser.o main.o
+parser.c parser.h: parser.y
+	bison -d -o parser.c parser.y
 
 lexer.o: lexer.c
-	$(CC) -c lexer.c
+	$(CC) $(CFLAGS) -c lexer.c
 
 parser.o: parser.c
-	$(CC) -c parser.c
+	$(CC) $(CFLAGS) -c parser.c
 
 main.o: main.c
-	$(CC) -c main.c
+	$(CC) $(CFLAGS) -c main.c
+
+symbolTable.o: symbolTable.c symbolTable.h
+	$(CC) $(CFLAGS) -c symbolTable.c
+
+hashTable.o: hashTable.c hashTable.h definitions.h
+	$(CC) $(CFLAGS) -c hashTable.c
 
 clean:
-	rm -f parser.c parser.h lexer.c *.o interpreter
+	rm -f *.o lexer.c parser.c parser.h $(TARGET)

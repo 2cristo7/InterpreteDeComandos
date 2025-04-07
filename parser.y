@@ -4,6 +4,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "symbolTable.h"
+
 void yyerror(const char *s);
 int yylex(void);
 
@@ -11,43 +13,6 @@ int quit_flag = 0;
 
 void set_quit_flag(int value) { quit_flag = value; }
 int get_quit_flag(void) { return quit_flag; }
-
-// Estructura básica para variables (simplificada)
-typedef struct variable {
-    char *name;
-    double value;
-    struct variable *next;
-} variable;
-
-variable *var_table = NULL;
-
-void set_variable(const char *name, double val) {
-    variable *v = var_table;
-    while (v) {
-        if (strcmp(v->name, name) == 0) {
-            v->value = val;
-            return;
-        }
-        v = v->next;
-    }
-    v = malloc(sizeof(variable));
-    v->name = strdup(name);
-    v->value = val;
-    v->next = var_table;
-    var_table = v;
-}
-
-int get_variable(const char *name, double *out) {
-    variable *v = var_table;
-    while (v) {
-        if (strcmp(v->name, name) == 0) {
-            *out = v->value;
-            return 1;
-        }
-        v = v->next;
-    }
-    return 0;
-}
 %}
 
 %union {
@@ -81,7 +46,7 @@ line:
 
 assignment:
     ID '=' expr {
-        set_variable($1, $3);
+        setVariable($1, $3);
         $$ = $3;
         free($1);
     }
@@ -104,7 +69,7 @@ expr:
   | NUMBER               { $$ = $1; }
   | ID                   {
                             double val;
-                            if (get_variable($1, &val)) {
+                            if (getVariable($1, &val)) {
                                 $$ = val;
                             } else {
                                 yyerror("Variable no definida");

@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "symbolTable.h"
+
 extern int yyparse(void);
 extern void set_quit_flag(int value);
 extern int get_quit_flag(void);
@@ -11,6 +13,9 @@ extern void yylex_destroy(void); // Limpia buffers de Flex
 #define MAX_LINE 1024
 
 int main() {
+
+    initializeSymbolTable();
+
     char line[MAX_LINE];
 
     printf("Bienvenido al intérprete matemático interactivo.\n");
@@ -33,5 +38,7 @@ int main() {
     }
 
     printf("¡Hasta pronto!\n");
+
+    freeTable();
     return 0;
 }
