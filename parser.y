@@ -72,8 +72,8 @@ input:
   ;
 
 line:
-    assignment EOL       { printf("%.6f\n", $1); }
-  | expr EOL             { printf("%.6f\n", $1); }
+    assignment EOL       { printf("%.2f\n", $1); }
+  | expr EOL             { printf("%.2f\n", $1); }
   | QUIT_CALL EOL        { set_quit_flag(1); }
   | EOL
   | error EOL            { yyerror("Entrada no válida"); yyerrok; }
